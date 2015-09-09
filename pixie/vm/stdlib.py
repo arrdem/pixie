@@ -589,6 +589,38 @@ def ns_aliases(ns):
 
     return nil
 
+@as_var("is-public?")
+def is_public(sym):
+    from pixie.vm.symbol import Symbol
+    affirm(isinstance(sym, Symbol), u"sym must be a symbol")
+
+    if rt._val_at(rt.meta(sym), keyword(u"private"), nil) is true:
+        return true
+    else:
+        return false
+
+@as_var("ns-publics")
+def ns_publics(ns):
+    from pixie.vm.symbol import Symbol
+    affirm(isinstance(ns, Namespace) or isinstance(ns, Symbol), u"ns must be a symbol or a namespace")
+
+    if isinstance(ns, Symbol):
+        ns = rt.the_ns(ns)
+        if ns is nil:
+            return nil
+
+    if isinstance(ns, Namespace):
+        m = rt.hashmap()
+        for name, value in ns._registry.iteritems():
+            affirm(isinstance(name, Symbol), u"Ns bindings must be symbols")
+
+            if(is_public(symbol)):
+                m = rt.assoc(m, rt.symbol(rt.wrap(name)), value)
+
+        return m
+
+    return nil
+
 @as_var("refer-ns")
 def refer(ns, refer, alias):
     from pixie.vm.symbol import Symbol
